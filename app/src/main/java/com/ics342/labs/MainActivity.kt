@@ -1,8 +1,11 @@
 package com.ics342.labs
 
+import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -52,7 +57,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            DataItemList(dataItems = dataItems)
+            DataItemList(dataItems = dataItems, context = this)
         }
     }
 }
@@ -93,14 +98,31 @@ fun DataItemView(dataItem: DataItem) {
     }
 }
 
-
 @Composable
-fun DataItemList(dataItems: List<DataItem>) {
+fun DataItemList(dataItems: List<DataItem>, context: Context) {
     LazyColumn {
         items(dataItems) { dataItem ->
             DataItemView(dataItem = dataItem)
+            Text(
+                text = dataItem.name,
+                modifier = Modifier.clickable {
+                    showAlertDialog(context, dataItem)
+                }
+            )
         }
     }
+}
+
+fun showAlertDialog(context: Context, dataItem: DataItem) {
+    val alertDialog = AlertDialog.Builder(context)
+        .setTitle(dataItem.name)
+        .setMessage(dataItem.description)
+        .setPositiveButton("Okay") { dialog, _ ->
+            dialog.dismiss()
+        }
+        .create()
+
+    alertDialog.show()
 }
 
 @Preview(showBackground = true)
